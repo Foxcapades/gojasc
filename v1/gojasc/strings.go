@@ -1,25 +1,47 @@
 package gojasc
 
-// MicroString represents a string with a max size of 57 serialized bytes.
-type MicroString string
+import (
+	"github.com/foxcapades/tally-go/v1/tally"
+)
 
-//func (m MicroString) SerializeJASC() []byte {
-//
-//}
+type String string
 
-// TinyString represents a string with a max size of 3,249 serialized bytes.
-type TinyString string
+func (s String) MarshalJASC() []byte {
+	sz := s.JASCSize()
 
-// ShortString represents a string with a max size of 185,193 serialized bytes.
-type ShortString string
+	if sz == 1 {
+		return []byte{min}
+	}
 
-// MidString represents a string with a max size of 10,556,001 serialized bytes.
-type MidString string
+	out := make([]byte, sz)
+	off := tally.UTally(0)
+	SerializeUint64Into(uint64(sz), out, &off)
+	for i := range s {
+		out[off.Inc()] = s[i]
+	}
 
-// LargeString represents a string with a max size of 601,692,057 serialized
-// bytes.
-type LargeString string
+	return out
+}
 
-// HugeString represents a string with a max size of 34,296,447,249 serialized
-// bytes.
-type HugeString string
+func (s String) MarshalJASCInto(buf []byte, off *tally.UTally) {
+	sz := s.JASCSize()
+
+	if sz == 1 {
+		buf[off.Inc()] = min
+		return
+	}
+
+	SerializeUint64Into(uint64(sz), buf, off)
+	for i := range s {
+		buf[off.Inc()] = s[i]
+	}
+}
+
+func (s String) JASCSize() uint {
+	sz := len(s)
+	if sz == 0 {
+		return 1
+	}
+
+	return uint(SizeUint64(uint64(sz))) + uint(sz)
+}
