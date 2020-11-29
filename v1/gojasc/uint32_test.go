@@ -84,6 +84,16 @@ func TestSerializeUint32Into(t *testing.T) {
 			gojasc.SerializeUint32Into(4_294_967_295, buf, &off)
 			So(string(buf[:off.Cur()]), ShouldEqual, ")**TS+;")
 		})
+
+		Convey("Repeated use", func() {
+			buf := make([]byte, 6)
+			off := tally.UTally(0)
+			gojasc.SerializeUint32Into(1, buf, &off)
+			gojasc.SerializeUint32Into(2, buf, &off)
+			gojasc.SerializeUint32Into(3, buf, &off)
+
+			So(buf, ShouldResemble, []byte("$$$%$&"))
+		})
 	})
 }
 

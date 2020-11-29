@@ -50,6 +50,16 @@ func TestSerializeUInt8(t *testing.T) {
 				So(tmp, ShouldResemble, pair.o)
 			})
 		}
+
+		Convey("Repeated use", func() {
+			buf := make([]byte, 6)
+			off := tally.UTally(0)
+			gojasc.SerializeUint8Into(1, buf, &off)
+			gojasc.SerializeUint8Into(2, buf, &off)
+			gojasc.SerializeUint8Into(3, buf, &off)
+
+			So(buf, ShouldResemble, []byte("$$$%$&"))
+		})
 	})
 }
 

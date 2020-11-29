@@ -57,6 +57,16 @@ func TestSerializeUint16Into(t *testing.T) {
 			gojasc.SerializeUint16Into(65535, buf, &off)
 			So(string(buf[:off.Cur()]), ShouldEqual, "&7,M")
 		})
+
+		Convey("Repeated use", func() {
+			buf := make([]byte, 6)
+			off := tally.UTally(0)
+			gojasc.SerializeUint16Into(1, buf, &off)
+			gojasc.SerializeUint16Into(2, buf, &off)
+			gojasc.SerializeUint16Into(3, buf, &off)
+
+			So(buf, ShouldResemble, []byte("$$$%$&"))
+		})
 	})
 }
 

@@ -48,8 +48,8 @@ func SerializeUint8Into(v uint8, buf []byte, off *tally.UTally) {
 	}
 
 	sz := SizeUint8(v)
-	pos := sz
-	cur := off.Add(pos)
+	pos := sz + off.Cur()
+	cur := off.Add(sz)
 
 	for v > 0 {
 		pos--

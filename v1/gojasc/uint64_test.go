@@ -161,6 +161,16 @@ func TestSerializeUint64Into(t *testing.T) {
 			gojasc.SerializeUint64Into(567_890_123_456_789_012, buf, &off)
 			So(string(buf[:off.Cur()]), ShouldEqual, ".$C:;)<MX02%")
 		})
+
+		Convey("Repeated use", func() {
+			buf := make([]byte, 6)
+			off := tally.UTally(0)
+			gojasc.SerializeUint64Into(1, buf, &off)
+			gojasc.SerializeUint64Into(2, buf, &off)
+			gojasc.SerializeUint64Into(3, buf, &off)
+
+			So(buf, ShouldResemble, []byte("$$$%$&"))
+		})
 	})
 }
 
