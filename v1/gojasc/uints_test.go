@@ -28,6 +28,12 @@ var chars = [...]byte{
 	'[',
 }
 
+// ╔════════════════════════════════════════════════════════════════════════╗ //
+// ║                                                                        ║ //
+// ║     Uint8 Serialization                                                ║ //
+// ║                                                                        ║ //
+// ╚════════════════════════════════════════════════════════════════════════╝ //
+
 func TestSerializeUInt8(t *testing.T) {
 	Convey("SerializeUInt8", t, func() {
 		type bt struct {
@@ -140,12 +146,40 @@ func TestDeserializeUInt8(t *testing.T) {
 			{255, []byte("%'>")},
 		} {
 			Convey(fmt.Sprintf("Input %d", pair.i), func() {
-				tmp := gojasc.DeserializeUint8(pair.o)
-				So(tmp, ShouldResemble, pair.i)
+				off := tally.UTally(0)
+				tmp, err := gojasc.DeserializeUint8(pair.o, &off)
+				So(err, ShouldBeNil)
+				So(tmp, ShouldEqual, pair.i)
 			})
 		}
 	})
 }
+
+func ExampleDeserializeUint8() {
+	input := []byte("#$$$%$&$'$($)$*$+")
+	offset := tally.UTally(0)
+
+	for int(offset.Cur()) < len(input) {
+		fmt.Println(gojasc.DeserializeUint8(input, &offset))
+	}
+
+	// Output:
+	// 0 <nil>
+	// 1 <nil>
+	// 2 <nil>
+	// 3 <nil>
+	// 4 <nil>
+	// 5 <nil>
+	// 6 <nil>
+	// 7 <nil>
+	// 8 <nil>
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗ //
+// ║                                                                        ║ //
+// ║     Uint16 Serialization                                               ║ //
+// ║                                                                        ║ //
+// ╚════════════════════════════════════════════════════════════════════════╝ //
 
 func TestSerializeUint16(t *testing.T) {
 	Convey("SerializeUint16", t, func() {
@@ -196,19 +230,51 @@ func TestSerializeUint16Into(t *testing.T) {
 func TestDeserializeUint16(t *testing.T) {
 	Convey("DeserializeUint16", t, func() {
 		Convey("Input: 0", func() {
-			So(gojasc.DeserializeUint16([]byte("#")), ShouldEqual, 0)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint16([]byte("#"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 0)
 		})
 		Convey("Input: 1", func() {
-			So(gojasc.DeserializeUint16([]byte("$$")), ShouldEqual, 1)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint16([]byte("$$"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 1)
 		})
 		Convey("Input: 255", func() {
-			So(gojasc.DeserializeUint16([]byte("%'>")), ShouldEqual, 255)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint16([]byte("%'>"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 255)
 		})
 		Convey("Input: 65,535", func() {
-			So(gojasc.DeserializeUint16([]byte("&7,M")), ShouldEqual, 65535)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint16([]byte("&7,M"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 65535)
 		})
 	})
 }
+
+func ExampleDeserializeUint16() {
+	input := []byte("$$%'>&7,M")
+	offset := tally.UTally(0)
+
+	for int(offset.Cur()) < len(input) {
+		fmt.Println(gojasc.DeserializeUint32(input, &offset))
+	}
+
+	// Output:
+	// 1 <nil>
+	// 255 <nil>
+	// 65535 <nil>
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗ //
+// ║                                                                        ║ //
+// ║     Uint32 Serialization                                               ║ //
+// ║                                                                        ║ //
+// ╚════════════════════════════════════════════════════════════════════════╝ //
 
 func TestSerializeUint32(t *testing.T) {
 	Convey("SerializeUint32", t, func() {
@@ -286,28 +352,69 @@ func TestSerializeUint32Into(t *testing.T) {
 func TestDeserializeUint32(t *testing.T) {
 	Convey("DeserializeUint32", t, func() {
 		Convey("Input: 0", func() {
-			So(gojasc.DeserializeUint32([]byte("#")), ShouldEqual, 0)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint32([]byte("#"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 0)
 		})
 		Convey("Input: 1", func() {
-			So(gojasc.DeserializeUint32([]byte("$$")), ShouldEqual, 1)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint32([]byte("$$"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 1)
 		})
 		Convey("Input: 255", func() {
-			So(gojasc.DeserializeUint32([]byte("%'>")), ShouldEqual, 255)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint32([]byte("%'>"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 255)
 		})
 		Convey("Input: 65,535", func() {
-			So(gojasc.DeserializeUint32([]byte("&7,M")), ShouldEqual, 65535)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint32([]byte("&7,M"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 65535)
 		})
 		Convey("Input: 185,194", func() {
-			So(gojasc.DeserializeUint32([]byte("'$##$")), ShouldEqual, 185_194)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint32([]byte("'$##$"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 185_194)
 		})
 		Convey("Input: 10,556,100", func() {
-			So(gojasc.DeserializeUint32([]byte("($##$M")), ShouldEqual, 10_556_100)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint32([]byte("($##$M"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 10_556_100)
 		})
 		Convey("Input: 4,294,967,295", func() {
-			So(gojasc.DeserializeUint32([]byte(")**TS+;")), ShouldEqual, 4294967295)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint32([]byte(")**TS+;"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 4294967295)
 		})
 	})
 }
+
+func ExampleDeserializeUint32() {
+	input := []byte("'$##$)**TS+;($##$M")
+	offset := tally.UTally(0)
+
+	for int(offset.Cur()) < len(input) {
+		fmt.Println(gojasc.DeserializeUint32(input, &offset))
+	}
+
+	// Output:
+	// 185194 <nil>
+	// 4294967295 <nil>
+	// 10556100 <nil>
+}
+
+// ╔════════════════════════════════════════════════════════════════════════╗ //
+// ║                                                                        ║ //
+// ║     Uint64 Serialization                                               ║ //
+// ║                                                                        ║ //
+// ╚════════════════════════════════════════════════════════════════════════╝ //
 
 func TestSerializeUint64(t *testing.T) {
 	Convey("SerializeUint64", t, func() {
@@ -442,40 +549,90 @@ func TestSerializeUint64Into(t *testing.T) {
 func TestDeserializeUint64(t *testing.T) {
 	Convey("DeserializeUint64", t, func() {
 		Convey("Input: 0", func() {
-			So(gojasc.DeserializeUint64([]byte("#")), ShouldEqual, 0)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte("#"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 0)
 		})
 		Convey("Input: 1", func() {
-			So(gojasc.DeserializeUint64([]byte("$$")), ShouldEqual, 1)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte("$$"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 1)
 		})
 		Convey("Input: 255", func() {
-			So(gojasc.DeserializeUint64([]byte("%'>")), ShouldEqual, 255)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte("%'>"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 255)
 		})
 		Convey("Input: 65,535", func() {
-			So(gojasc.DeserializeUint64([]byte("&7,M")), ShouldEqual, 65535)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte("&7,M"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 65535)
 		})
 		Convey("Input: 185,194", func() {
-			So(gojasc.DeserializeUint64([]byte("'$##$")), ShouldEqual, 185_194)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte("'$##$"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 185_194)
 		})
 		Convey("Input: 10,556,100", func() {
-			So(gojasc.DeserializeUint64([]byte("($##$M")), ShouldEqual, 10_556_100)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte("($##$M"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 10_556_100)
 		})
 		Convey("Input: 601,692,657", func() {
-			So(gojasc.DeserializeUint64([]byte(")$###-A")), ShouldEqual, 601_692_657)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte(")$###-A"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 601_692_657)
 		})
 		Convey("Input: 37,256,437,249", func() {
-			So(gojasc.DeserializeUint64([]byte("*$'W:2>*")), ShouldEqual, 37_256_437_249)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte("*$'W:2>*"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 37_256_437_249)
 		})
 		Convey("Input: 2,964,996,584,284", func() {
-			So(gojasc.DeserializeUint64([]byte("+$@<NBW<Q")), ShouldEqual, 2_964_996_584_284)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte("+$@<NBW<Q"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 2_964_996_584_284)
 		})
 		Convey("Input: 123,456,789,012,345", func() {
-			So(gojasc.DeserializeUint64([]byte(",$)+JIO@IY")), ShouldEqual, 123_456_789_012_345)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte(",$)+JIO@IY"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 123_456_789_012_345)
 		})
 		Convey("Input: 12,345,678,901,234,567", func() {
-			So(gojasc.DeserializeUint64([]byte("-$XP1F%)'6W")), ShouldEqual, 12_345_678_901_234_567)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte("-$XP1F%)'6W"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 12_345_678_901_234_567)
 		})
 		Convey("Input: 567,890,123,456,789,012", func() {
-			So(gojasc.DeserializeUint64([]byte(".$C:;)<MX02%")), ShouldEqual, 567_890_123_456_789_012)
+			off := tally.UTally(0)
+			out, err := gojasc.DeserializeUint64([]byte(".$C:;)<MX02%"), &off)
+			So(err, ShouldBeNil)
+			So(out, ShouldEqual, 567_890_123_456_789_012)
 		})
 	})
+}
+
+func ExampleDeserializeUint64() {
+	input := []byte(".$C:;)<MX02%-$XP1F%)'6W,$)+JIO@IY")
+	offset := tally.UTally(0)
+
+	for int(offset.Cur()) < len(input) {
+		fmt.Println(gojasc.DeserializeUint64(input, &offset))
+	}
+
+	// Output:
+	// 567890123456789012 <nil>
+	// 12345678901234567 <nil>
+	// 123456789012345 <nil>
 }

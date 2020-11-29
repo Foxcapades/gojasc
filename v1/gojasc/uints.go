@@ -65,16 +65,20 @@ func SerializeUint8Into(v uint8, buf []byte, off *tally.UTally) {
 	buf[cur] = byte(sz-1) + min
 }
 
-func DeserializeUint8(v []byte) uint8 {
-	a := DeserializeUDigit(v[0])
+func DeserializeUint8(v []byte, off *tally.UTally) (uint8, error) {
+	a := DeserializeUDigit(v[off.Inc()])
+
+	if a < 0 {
+		return 0, NewJASCByteError(0)
+	}
 
 	switch a {
 	case 0:
-		return 0
+		return 0, nil
 	case 1:
-		return DeserializeUDigit(v[1])
+		return DeserializeUDigit(v[off.Inc()]), nil
 	default:
-		return DeserializeUDigit(v[2]) + DeserializeUDigit(v[1])*Base
+		return DeserializeUDigit(v[off.Inc()])*Base + DeserializeUDigit(v[off.Inc()]), nil
 	}
 }
 
@@ -151,20 +155,27 @@ func SerializeUint16Into(v uint16, buf []byte, off *tally.UTally) {
 	buf[cur] = byte(sz-1) + min
 }
 
-func DeserializeUint16(v []byte) (out uint16) {
-	a := DeserializeUDigit(v[0])
+func DeserializeUint16(v []byte, off *tally.UTally) (out uint16, err error) {
+	a := DeserializeUDigit(v[off.Inc()])
+
+	if a < 0 {
+		return 0, NewJASCByteError(0)
+	}
 
 	switch a {
 	case 0:
-		return 0
+		return 0, nil
 	case 1:
-		return uint16(DeserializeUDigit(v[1]))
+		return uint16(DeserializeUDigit(v[off.Inc()])), nil
 	case 2:
-		return uint16(DeserializeUDigit(v[2])) + uint16(DeserializeUDigit(v[1]))*Base
+		return uint16(DeserializeUDigit(v[off.Inc()]))*Base +
+				uint16(DeserializeUDigit(v[off.Inc()])),
+			nil
 	default:
-		return uint16(DeserializeUDigit(v[3])) +
-			uint16(DeserializeUDigit(v[2]))*Base +
-			uint16(DeserializeUDigit(v[1]))*powU16(Base, 2)
+		return uint16(DeserializeUDigit(v[off.Inc()]))*powU16(Base, 2) +
+				uint16(DeserializeUDigit(v[off.Inc()]))*Base +
+				uint16(DeserializeUDigit(v[off.Inc()])),
+			nil
 	}
 }
 
@@ -256,25 +267,23 @@ func SerializeUint32Into(v uint32, buf []byte, off *tally.UTally) {
 	buf[cur] = byte(sz-1) + min
 }
 
-func DeserializeUint32(v []byte) (out uint32) {
-	sz := DeserializeUDigit(v[0])
+func DeserializeUint32(v []byte, off *tally.UTally) (out uint32, err error) {
+	sz := int(DeserializeUDigit(v[off.Inc()]))
 
-	switch sz {
-	case 0:
-		return 0
-	case 1:
-		return uint32(DeserializeUDigit(v[1]))
-	case 2:
-		return uint32(DeserializeUDigit(v[2])) + uint32(DeserializeUDigit(v[1]))*Base
+	if sz < 0 {
+		return 0, NewJASCByteError(0)
+	} else if sz == 0 {
+		return 0, nil
 	}
 
-	i := int(sz)
-	for j := uint8(0); j < sz; j++ {
-		out += uint32(DeserializeUDigit(v[i])) * powU32(Base, j)
+	i := sz + int(off.Add(uint(sz)))
+
+	for j := 0; j < sz; j++ {
 		i--
+		out += uint32(DeserializeUDigit(v[i])) * powU32(j)
 	}
 
-	return out
+	return out, nil
 }
 
 // SizeUint32 returns the number of bytes needed in a byte buffer to hold the
@@ -301,14 +310,14 @@ func SizeUint32(v uint32) int {
 	}
 }
 
-func powU32(a, b uint8) (out uint32) {
-	if b == 0 {
+func powU32(a int) (out uint32) {
+	if a == 0 {
 		return 1
 	}
 
 	out = 1
-	for i := uint8(0); i < b; i++ {
-		out *= uint32(a)
+	for i := 0; i < a; i++ {
+		out *= uint32(Base)
 	}
 
 	return
@@ -372,25 +381,23 @@ func SerializeUint64Into(v uint64, buf []byte, off *tally.UTally) {
 	buf[cur] = byte(sz-1) + min
 }
 
-func DeserializeUint64(v []byte) (out uint64) {
-	sz := DeserializeUDigit(v[0])
+func DeserializeUint64(v []byte, off *tally.UTally) (out uint64, err error) {
+	sz := int(DeserializeUDigit(v[off.Inc()]))
 
-	switch sz {
-	case 0:
-		return 0
-	case 1:
-		return uint64(DeserializeUDigit(v[1]))
-	case 2:
-		return uint64(DeserializeUDigit(v[2])) + uint64(DeserializeUDigit(v[1]))*Base
+	if sz < 0 {
+		return 0, NewJASCByteError(0)
+	} else if sz == 0 {
+		return 0, nil
 	}
 
-	i := int(sz)
-	for j := uint8(0); j < sz; j++ {
-		out += uint64(DeserializeUDigit(v[i])) * powU64(Base, j)
+	i := sz + int(off.Add(uint(sz)))
+
+	for j := 0; j < sz; j++ {
 		i--
+		out += uint64(DeserializeUDigit(v[i])) * powU64(j)
 	}
 
-	return out
+	return out, nil
 }
 
 // SizeUint64 returns the number of bytes needed in a byte buffer to hold the
@@ -416,14 +423,15 @@ func SizeUint64(v uint64) int {
 	}
 }
 
-func powU64(a, b uint8) (out uint64) {
-	if b == 0 {
+func powU64(a int) (out uint64) {
+	if a == 0 {
 		return 1
 	}
 
+	tmp := uint64(Base)
 	out = 1
-	for i := uint8(0); i < b; i++ {
-		out *= uint64(a)
+	for i := 0; i < a; i++ {
+		out *= tmp
 	}
 
 	return

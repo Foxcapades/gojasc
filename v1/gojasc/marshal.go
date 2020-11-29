@@ -2,12 +2,12 @@ package gojasc
 
 import "github.com/foxcapades/tally-go/v1/tally"
 
-type Marshaler interface {
-	MarshalJASC() []byte
-	MarshalJASCInto(buf []byte, off *tally.UTally)
+type Serializable interface {
+	SerializeJASC() ([]byte, error)
+	SerializeJASCInto(buf []byte, off *tally.UTally)
 	JASCSize() uint
 }
 
-type Unmarshaler interface {
-	UnmarshalJASC(buf []byte, off *tally.UTally)
+type Deserializable interface {
+	DeserializeJASC(buf []byte, off *tally.UTally)
 }
