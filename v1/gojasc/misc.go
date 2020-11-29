@@ -2,6 +2,10 @@ package gojasc
 
 import "github.com/foxcapades/tally-go/v1/tally"
 
+func DeserializeUDigit(b byte) uint8 {
+	return b - min
+}
+
 func SerializeBool(v bool) byte {
 	if v {
 		return bTrue
