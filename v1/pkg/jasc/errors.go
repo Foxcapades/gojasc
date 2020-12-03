@@ -1,4 +1,4 @@
-package gojasc
+package jasc
 
 var (
 	ErrNoHeader          = newJASCError("no size header in JASC value", 0)

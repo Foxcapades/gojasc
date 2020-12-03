@@ -1,4 +1,4 @@
-package gojasc
+package jasc
 
 import (
 	"github.com/foxcapades/tally-go/v1/tally"

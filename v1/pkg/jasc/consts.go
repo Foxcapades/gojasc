@@ -1,4 +1,4 @@
-package gojasc
+package jasc
 
 const (
 	Base         = 57
