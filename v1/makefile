@@ -7,6 +7,7 @@ endif
 test:
 	@if gcc -dumpmachine | grep -q x86_64; then \
 		go test -v ./...; \
+		GOARCH=386 go test ./...; \
 	else \
-		GOARCH=386 go test -v ./...; \
+		go test -v ./...; \
 	fi
