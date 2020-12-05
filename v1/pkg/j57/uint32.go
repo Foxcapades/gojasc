@@ -50,7 +50,7 @@ func AppendUint32(v uint32, buf []byte, off *tally.UTally) (wrote int) {
 
 	sz := SizeUint32(v)
 	pos := sz + off.Cur()
-	wrote = int(pos)
+	wrote = int(sz)
 	cur := off.Add(sz)
 
 	for v > 0 {

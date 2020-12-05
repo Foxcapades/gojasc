@@ -29,13 +29,26 @@ func TestStringSerialization(t *testing.T) {
 				name = "<long string omitted>"
 			}
 
-			Convey(fmt.Sprintf("I/O with SerializeBytes(%s)", name), func() {
+			Convey(fmt.Sprintf("I/O with SerializeString(%s)", name), func() {
 				tmp := j57.SerializeString(tests[i])
 				tal := tally.UTally(0)
 				out, err := j57.DeserializeString(tmp, &tal)
 
 				So(len(tmp), ShouldBeGreaterThanOrEqualTo, j57.SizeString(tests[i]))
 				So(len(tmp)+int(float64(len(tmp))*0.11), ShouldBeGreaterThan, j57.SizeString(tests[i]))
+
+				So(err, ShouldBeNil)
+				So(out, ShouldEqual, tests[i])
+			})
+
+			Convey(fmt.Sprintf("I/O with AppendString(%s)", name), func() {
+				buf := make([]byte, j57.SizeString(tests[i]))
+				off := tally.UTally(0)
+
+				So(j57.AppendString(tests[i], buf, &off), ShouldEqual, off)
+
+				off = 0
+				out, err := j57.DeserializeString(buf, &off)
 
 				So(err, ShouldBeNil)
 				So(out, ShouldEqual, tests[i])

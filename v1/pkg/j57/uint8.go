@@ -54,7 +54,7 @@ func AppendUint8(v uint8, buf []byte, off *tally.UTally) (wrote int) {
 
 	sz := SizeUint8(v)
 	pos := sz + off.Cur()
-	wrote = int(pos)
+	wrote = int(sz)
 	cur := off.Add(sz)
 
 	for v > 0 {

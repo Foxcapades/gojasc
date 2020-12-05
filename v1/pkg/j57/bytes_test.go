@@ -24,13 +24,26 @@ func TestByteSliceSerialization(t *testing.T) {
 	}
 	Convey("String (de)serialization", t, func() {
 		for i := range tests {
-			Convey(fmt.Sprintf("I/O with SerializeString(%s)", tests[i]), func() {
+			Convey(fmt.Sprintf("I/O with SerializeBytes(%s)", tests[i]), func() {
 				tmp := j57.SerializeBytes(tests[i])
 
 				So(len(tmp), ShouldEqual, j57.SizeBytes(tests[i]))
 
 				tal := tally.UTally(0)
 				out, err := j57.DeserializeBytes(tmp, &tal)
+
+				So(err, ShouldBeNil)
+				So(out, ShouldResemble, tests[i])
+			})
+
+			Convey(fmt.Sprintf("I/O with AppendBytes(%s)", tests[i]), func() {
+				buf := make([]byte, j57.SizeBytes(tests[i]))
+				off := tally.UTally(0)
+
+				So(j57.AppendBytes(tests[i], buf, &off), ShouldEqual, off)
+
+				off = 0
+				out, err := j57.DeserializeBytes(buf, &off)
 
 				So(err, ShouldBeNil)
 				So(out, ShouldResemble, tests[i])

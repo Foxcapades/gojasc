@@ -50,7 +50,7 @@ func AppendUint16(v uint16, buf []byte, off *tally.UTally) (wrote int) {
 
 	sz := SizeUint16(v)
 	pos := sz + off.Cur()
-	wrote = int(pos)
+	wrote = int(sz)
 	cur := off.Add(sz)
 
 	for v > 0 {
