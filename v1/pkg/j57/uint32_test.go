@@ -139,7 +139,7 @@ func TestDeserializeUint32(t *testing.T) {
 			off := tally.UTally(0)
 			out, err := j57.DeserializeUint32([]byte(")**TS+;"), &off)
 			So(err, ShouldBeNil)
-			So(out, ShouldEqual, 4294967295)
+			So(out, ShouldEqual, uint32(4294967295))
 		})
 	})
 }

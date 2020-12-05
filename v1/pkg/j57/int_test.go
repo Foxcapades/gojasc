@@ -11,7 +11,7 @@ import (
 
 func TestSerializeInt(t *testing.T) {
 	type tt struct {
-		i    int
+		i    int64
 		o    []byte
 		size int
 	}
@@ -36,25 +36,25 @@ func TestSerializeInt(t *testing.T) {
 			o:    []byte{35},
 			size: 1,
 		},
-		{
-			i:    -128,
-			o:    []byte{46, 85, 89, 53, 82, 62, 75, 53, 47, 55, 44, 76},
-			size: 12,
-		},
-		{
-			i:    -32768,
-			o:    []byte{46, 85, 89, 53, 82, 62, 75, 53, 47, 45, 42, 40},
-			size: 12,
-		},
-		{
-			i:    -2147483648,
-			o:    []byte{46, 85, 89, 53, 82, 62, 71, 77, 79, 59, 71, 49},
-			size: 12,
-		},
 	}
 
 	if bits.UintSize == 64 {
 		tests = append(tests,
+			tt{
+				i:    -128,
+				o:    []byte{46, 85, 89, 53, 82, 62, 75, 53, 47, 55, 44, 76},
+				size: 12,
+			},
+			tt{
+				i:    -32768,
+				o:    []byte{46, 85, 89, 53, 82, 62, 75, 53, 47, 45, 42, 40},
+				size: 12,
+			},
+			tt{
+				i:    -2147483648,
+				o:    []byte{46, 85, 89, 53, 82, 62, 71, 77, 79, 59, 71, 49},
+				size: 12,
+			},
 			tt{
 				i:    9223372036854775807,
 				o:    []byte{46, 60, 62, 44, 58, 77, 55, 44, 41, 45, 40, 90},
@@ -66,6 +66,24 @@ func TestSerializeInt(t *testing.T) {
 				size: 12,
 			},
 		)
+	} else {
+		tests = append(tests,
+			tt{
+				i:    -128,
+				o:    []byte{41, 42, 42, 84, 83, 41, 46},
+				size: 7,
+			},
+			tt{
+				i:    -32768,
+				o:    []byte{41, 42, 42, 84, 73, 38, 67},
+				size: 7,
+			},
+			tt{
+				i:    -2147483648,
+				o:    []byte{41, 38, 67, 59, 87, 67, 76},
+				size: 7,
+			},
+		)
 	}
 
 	Convey("SerializeInt", t, func() {
@@ -73,7 +91,7 @@ func TestSerializeInt(t *testing.T) {
 		for _, test := range tests {
 			Convey(fmt.Sprintf("(%d) -> %s", test.i, string(test.o)), func() {
 				var tally UTally
-				So(AppendInt(test.i, buf[:], &tally), ShouldResemble, test.size)
+				So(AppendInt(int(test.i), buf[:], &tally), ShouldResemble, test.size)
 			})
 		}
 	})
@@ -81,7 +99,7 @@ func TestSerializeInt(t *testing.T) {
 
 func TestSerializeIntInto(t *testing.T) {
 	type tt struct {
-		i int
+		i int64
 		o []byte
 		s int
 	}
@@ -153,7 +171,7 @@ func TestSerializeIntInto(t *testing.T) {
 			Convey(fmt.Sprintf("input: %d", test.i), func() {
 				var tally UTally
 
-				So(AppendInt(test.i, buf[:], &tally), ShouldResemble, test.s)
+				So(AppendInt(int(test.i), buf[:], &tally), ShouldResemble, test.s)
 			})
 		}
 	})
@@ -162,7 +180,7 @@ func TestSerializeIntInto(t *testing.T) {
 func TestDeserializeInt(t *testing.T) {
 	type tt struct {
 		i []byte
-		o int
+		o int64
 	}
 
 	var tests []tt
