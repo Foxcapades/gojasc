@@ -1,4 +1,4 @@
-package jasc
+package j57
 
 var (
 	ErrNoHeader          = newJASCError("no size header in JASC value", 0)
@@ -8,6 +8,46 @@ var (
 var (
 	TxtErrInvalidJASCByte = "unrecognized JASC byte value"
 )
+
+const (
+	Base         = 57
+	min     byte = '#'
+	max     byte = '['
+	conMask byte = 128
+
+	bTrue  = min + 1
+	bFalse = min
+)
+
+type ValueKind uint8
+
+const (
+	KindNone ValueKind = iota
+	KindBool
+	KindString
+	KindUint8
+	KindUint16
+	KindUint32
+	KindUint64
+)
+
+func (v ValueKind) String() string {
+	switch v {
+	case KindString:
+		return "string"
+	case KindBool:
+		return "bool"
+	case KindUint8:
+		return "uint8"
+	case KindUint16:
+		return "uint16"
+	case KindUint32:
+		return "uint32"
+	case KindUint64:
+		return "uint64"
+	}
+	return "none"
+}
 
 type JASCError interface {
 	error

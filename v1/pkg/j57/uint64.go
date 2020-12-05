@@ -1,4 +1,4 @@
-package jasc
+package j57
 
 import "github.com/foxcapades/tally-go/v1/tally"
 
@@ -32,7 +32,7 @@ func SerializeUint64(v uint64) []byte {
 	return out
 }
 
-// SerializeUint64Into converts the given uint64 value to base57 and writes it
+// AppendUint64 converts the given uint64 value to base57 and writes it
 // to the given buffer starting at off.Cur().
 //
 // The given offset value will be incremented as the buffer is written and after
@@ -41,14 +41,16 @@ func SerializeUint64(v uint64) []byte {
 // WARNING: This method makes no attempt to verify that the given byte buffer is
 // actually long enough to hold the serialized value.  The buffer size should be
 // at least SizeUint64(v) in length.
-func SerializeUint64Into(v uint64, buf []byte, off *tally.UTally) {
+func AppendUint64(v uint64, buf []byte, off *tally.UTally) (wrote int) {
 	if v == 0 {
 		buf[off.Inc()] = min
+		wrote = 1
 		return
 	}
 
 	sz := SizeUint64(v)
 	pos := sz + off.Cur()
+	wrote = int(pos)
 	cur := off.Add(sz)
 
 	for v > 0 {
@@ -58,6 +60,8 @@ func SerializeUint64Into(v uint64, buf []byte, off *tally.UTally) {
 	}
 
 	buf[cur] = byte(sz-1) + min
+
+	return
 }
 
 func DeserializeUint64(v []byte, off *tally.UTally) (out uint64, err error) {

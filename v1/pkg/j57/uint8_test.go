@@ -1,8 +1,8 @@
-package jasc_test
+package j57_test
 
 import (
 	"fmt"
-	"github.com/foxcapades/gojasc/v1/pkg/jasc"
+	"github.com/foxcapades/gojasc/v1/pkg/j57"
 	"github.com/foxcapades/tally-go/v1/tally"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
@@ -46,7 +46,7 @@ func TestSerializeUInt8(t *testing.T) {
 			{255, []byte("%'>")},
 		} {
 			Convey(fmt.Sprintf("Input %d", pair.i), func() {
-				tmp := jasc.SerializeUint8(pair.i)
+				tmp := j57.SerializeUint8(pair.i)
 				So(tmp, ShouldResemble, pair.o)
 			})
 		}
@@ -54,9 +54,9 @@ func TestSerializeUInt8(t *testing.T) {
 		Convey("Repeated use", func() {
 			buf := make([]byte, 6)
 			off := tally.UTally(0)
-			jasc.SerializeUint8Into(1, buf, &off)
-			jasc.SerializeUint8Into(2, buf, &off)
-			jasc.SerializeUint8Into(3, buf, &off)
+			j57.AppendUint8(1, buf, &off)
+			j57.AppendUint8(2, buf, &off)
+			j57.AppendUint8(3, buf, &off)
 
 			So(buf, ShouldResemble, []byte("$$$%$&"))
 		})
@@ -97,7 +97,7 @@ func TestSerializeUint8Into(t *testing.T) {
 			Convey(fmt.Sprintf("Input %d", pair.i), func() {
 				buf := make([]byte, 4)
 				off := tally.UTally(0)
-				jasc.SerializeUint8Into(pair.i, buf, &off)
+				j57.AppendUint8(pair.i, buf, &off)
 				So(buf[0:len(pair.o)], ShouldResemble, pair.o)
 			})
 		}
@@ -137,7 +137,7 @@ func TestDeserializeUInt8(t *testing.T) {
 		} {
 			Convey(fmt.Sprintf("Input %d", pair.i), func() {
 				off := tally.UTally(0)
-				tmp, err := jasc.DeserializeUint8(pair.o, &off)
+				tmp, err := j57.DeserializeUint8(pair.o, &off)
 				So(err, ShouldBeNil)
 				So(tmp, ShouldEqual, pair.i)
 			})
@@ -150,7 +150,7 @@ func ExampleDeserializeUint8() {
 	offset := tally.UTally(0)
 
 	for int(offset.Cur()) < len(input) {
-		fmt.Println(jasc.DeserializeUint8(input, &offset))
+		fmt.Println(j57.DeserializeUint8(input, &offset))
 	}
 
 	// Output:

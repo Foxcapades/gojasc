@@ -1,4 +1,4 @@
-package jasc
+package j57
 
 import "github.com/foxcapades/tally-go/v1/tally"
 
