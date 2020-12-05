@@ -26,6 +26,18 @@ func TestBoolTypes(t *testing.T) {
 	}
 }
 
+func TestBytesTypes(t *testing.T) {
+	__ignore_me__ = struct {
+		t1 BytesBufAppenderFn
+		t2 BytesDeserializerFn
+		t3 BytesSerializerFn
+	}{
+		AppendBytes,
+		DeserializeBytes,
+		SerializeBytes,
+	}
+}
+
 func TestC64Types(t *testing.T) {
 	__ignore_me__ = struct {
 		t1 C64BufAppenderFn
@@ -157,12 +169,10 @@ func TestStringTypes(t *testing.T) {
 		t1 StringBufAppenderFn
 		t2 StringDeserializerFn
 		t3 StringSerializerFn
-		t4 StringSizeFn
 	}{
 		AppendString,
 		DeserializeString,
 		SerializeString,
-		SizeString,
 	}
 }
 

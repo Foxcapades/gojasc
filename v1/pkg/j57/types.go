@@ -26,6 +26,24 @@ type BoolSizeFn = func(bool) uint
 
 // ╔════════════════════════════════════════════════════════════════════════╗ //
 // ║                                                                        ║ //
+// ║   Byte Slice Serialization Functions                                   ║ //
+// ║                                                                        ║ //
+// ╚════════════════════════════════════════════════════════════════════════╝ //
+
+// BytesSerializerFn is a function type declaration matching the included
+// SerializeBytes function.
+type BytesSerializerFn = func([]byte) []byte
+
+// BytesBufAppenderFn is a function type declaration matching the included
+// AppendBytes function.
+type BytesBufAppenderFn = func([]byte, []byte, *tally.UTally) int
+
+// BytesDeserializerFn is a function type declaration matching the included
+// DeserializeBytes function.
+type BytesDeserializerFn = func([]byte, *tally.UTally) ([]byte, error)
+
+// ╔════════════════════════════════════════════════════════════════════════╗ //
+// ║                                                                        ║ //
 // ║   Complex64 Serialization Functions                                    ║ //
 // ║                                                                        ║ //
 // ╚════════════════════════════════════════════════════════════════════════╝ //
@@ -239,10 +257,6 @@ type StringBufAppenderFn = func(string, []byte, *tally.UTally) int
 // StringDeserializerFn is a function type declaration matching the included
 // DeserializeString function.
 type StringDeserializerFn = func([]byte, *tally.UTally) (string, error)
-
-// StringSizeFn is a function type declaration matching the included StringSize
-// function.
-type StringSizeFn = func(string) uint
 
 // ╔════════════════════════════════════════════════════════════════════════╗ //
 // ║                                                                        ║ //
