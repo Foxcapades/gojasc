@@ -14,7 +14,7 @@ func SerializeBytes(v []byte) []byte {
 
 	buffer := make([]byte, SizeBytes(v))
 	offset := tally.UTally(0)
-	subSerializeString(v, sz, buffer, &offset)
+	subSerializeBytes(v, sz, buffer, &offset)
 
 	return buffer
 }
@@ -27,7 +27,7 @@ func AppendBytes(v []byte, buf []byte, off *tally.UTally) (wrote int) {
 		return 1
 	}
 
-	return subSerializeString(v, sz, buf, off)
+	return subSerializeBytes(v, sz, buf, off)
 }
 
 func subSerializeBytes(
@@ -72,16 +72,20 @@ func subSerializeBytes(
 		wrote += AppendUint64(unsafeS2U64(&blockBuf), buf, off)
 	}
 
-	i := 0
-	for ; i < overflow; i++ {
-		blockBuf[i] = in[pos]
-		pos++
-	}
-	for ; i < 8; i++ {
-		blockBuf[i] = 0
+	if overflow > 0 {
+		i := 0
+		for ; i < overflow; i++ {
+			blockBuf[i] = in[pos]
+			pos++
+		}
+		for ; i < 8; i++ {
+			blockBuf[i] = 0
+		}
+
+		wrote += AppendUint64(unsafeS2U64(&blockBuf), buf, off)
 	}
 
-	return wrote + AppendUint64(unsafeS2U64(&blockBuf), buf, off)
+	return
 }
 
 func DeserializeBytes(buf []byte, off *tally.UTally) ([]byte, error) {

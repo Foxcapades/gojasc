@@ -25,14 +25,17 @@ func TestStringSerialization(t *testing.T) {
 	Convey("String (de)serialization", t, func() {
 		for i := range tests {
 			name := tests[i]
-			if len(name) > 32 {
+			if len(name) > 64 {
 				name = "<long string omitted>"
 			}
 
-			Convey(fmt.Sprintf("I/O with SerializeString(%s)", tests[i]), func() {
+			Convey(fmt.Sprintf("I/O with SerializeBytes(%s)", name), func() {
 				tmp := j57.SerializeString(tests[i])
 				tal := tally.UTally(0)
 				out, err := j57.DeserializeString(tmp, &tal)
+
+				So(len(tmp), ShouldBeGreaterThanOrEqualTo, j57.SizeString(tests[i]))
+				So(len(tmp)+int(float64(len(tmp))*0.11), ShouldBeGreaterThan, j57.SizeString(tests[i]))
 
 				So(err, ShouldBeNil)
 				So(out, ShouldEqual, tests[i])
