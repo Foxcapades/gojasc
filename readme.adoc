@@ -1,0 +1,33 @@
+= JSON Safe Binary Serialization
+Elizabeth Paige Harper <foxcapade@gmail.com>
+v1.0, December 5, 2020
+
+GoJasc provides a suite of utilities to serialize data into a binary form that
+writes its octet output in a JSON safe range of ASCII characters.
+
+.Basic Usage
+[source, go]
+----
+package main
+
+import (
+	"encoding/json"
+	"math"
+	"os"
+
+	"github.com/foxcapades/gojasc/v1/pkg/j57"
+)
+
+func main() {
+	data := j57.SerializeComplex128(complex(math.MaxFloat64, math.MaxFloat64))
+
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.SetEscapeHTML(false)
+
+	_ = enc.Encode(string(data))
+
+	// Outputs:
+	// ".<=<[[=U=7(/.<=<[[=U=7(/"
+}
+----
